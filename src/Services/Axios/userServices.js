@@ -1,6 +1,8 @@
 import {
   APIUsers, APIDemands, APIClients, APISectors,
 } from './baseService/index';
+import "../../Constants/Errors";
+
 
 export async function getUser(url, startModal) {
   try {
@@ -8,9 +10,9 @@ export async function getUser(url, startModal) {
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível carregar o usuário, tente novamente mais tarde.');
+      startModal(NO_USER);
     }
     console.error(error);
   }
@@ -23,9 +25,9 @@ export async function getFourUsers(startModal) {
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível listar os últimos quatro usuários, tente novamente mais tarde.');
+      startModal(NO_LIST_4USERS);
     }
     console.error(error);
   }
@@ -43,12 +45,12 @@ export async function postUser(
       sector: inputSector,
       image: baseImage,
     });
-    startModal('Usuário cadastrado com sucesso!');
+    startModal(USER_SUCCESS);
   } catch (error) {
     if (error.response?.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response?.status !== 401) {
-      startModal('Email já cadastrado.');
+      startModal(EMAIL_REGISTER);
       console.error(`An unexpected error ocourred while registering a new user.${error}`);
     }
   }
@@ -63,7 +65,7 @@ export async function loginUser(
       pass: inputPassword,
     });
     if (response.data.message) {
-      startModal('Email e/ou senha inválidos.');
+      startModal(USER_PASSWORD_INVALID);
     } else {
       APIUsers.defaults.headers = { 'x-access-token': response.data.token };
       APIClients.defaults.headers = { 'x-access-token': response.data.token };
@@ -72,7 +74,7 @@ export async function loginUser(
     }
     return response.data;
   } catch (error) {
-    startModal('Não foi possivel fazer login. Tente novamente mais tarde.');
+    startModal(NO_LOGIN);
     console.error(error);
     return null;
   }
@@ -89,12 +91,12 @@ export const updateUser = async (
       sector: inputSector,
       image: baseImage,
     });
-    startModal('Usuário atualizado com sucesso!');
+    startModal(USER_ATUALIZE_SUCCESS);
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possivel atualizar o usuário. Tente novamente mais tarde.');
+      startModal(NO_ATUALIZE_USER);
     }
     console.error(`An unexpected error occurred while updating the user data.${error}`);
   }
@@ -105,9 +107,9 @@ export async function deleteUser(id, startModal) {
     await APIUsers.delete(`/users/delete/${id}`);
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal(`Não foi possivel deletar o usuário.\n${error}`);
+      startModal(NO_DELETE_USER);
     }
     console.error(error);
   }
@@ -120,13 +122,13 @@ export async function recoverPassword(
     await APIUsers.post('recover-password', {
       email: inputEmail,
     });
-    startModal('Senha enviada para o email.');
+    startModal(SEND_PASSWORD);
   } catch (error) {
     if (error.response.status === 400) {
-      startModal('Não foi possivel enviar o email de recuperação de senha. Tente novamente mais tarde.');
+      startModal(NO_SEND_RECUPERATION_EMAIL);
       console.error(error);
     } else if (error.response.status === 404) {
-      startModal('Não foi possivel encontrar um usuário cadastrado com este email.');
+      startModal(NO_USER_EMAIL);
       console.error(error);
     }
   }
@@ -140,19 +142,19 @@ export async function changePassword(
       pass,
     });
     if (response.status === 400) {
-      startModal('A senha deve conter pelo menos 6 caracteres');
+      startModal(PASSWORD_6CARACT);
       console.error(response.data.error);
       return null;
     }
     if (response.status === 404) {
-      startModal('Houve um erro ao tentar alterar a senha. Tente novamente mais tarde.');
+      startModal(ERROR_PASSWORD);
       console.error(response.data.error);
       return null;
     }
-    startModal('Senha alterada com sucesso.');
+    startModal(PASSWORD_SUCCESS);
     return response.data;
   } catch (error) {
-    startModal('Houve um erro ao tentar alterar a senha. Tente novamente mais tarde.');
+    startModal(ERROR_PASSWORD);
     console.error(error);
     return null;
   }

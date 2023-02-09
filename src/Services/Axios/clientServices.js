@@ -1,3 +1,5 @@
+import "../../Constants/Errors";
+import { FILL_ALL_FIELDS_EDIT } from "../../Constants/Errors";
 import { APIClients, APICargos } from './baseService/index';
 
 export async function getClients(url, startModal) {
@@ -6,9 +8,9 @@ export async function getClients(url, startModal) {
     return response;
   } catch (error) {
     if (error.response?.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response?.status !== 401) {
-      startModal('Não foi possível obter a lista de clientes, tente novamente mais tarde.');
+      startModal(NO_CLIENT_LIST);
     }
     console.error(`An unexpected error ocourred while retrieving the clients list.${error}`);
   }
@@ -21,9 +23,9 @@ export async function getClientData(id, startModal) {
     return response;
   } catch (error) {
     if (error.response?.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response?.status !== 401) {
-      startModal('Não foi possível obter dados sobre o cliente, tente novamente mais tarde.');
+      startModal(NO_CLIENT_DATAS);
     }
     console.error(`An unexpected error ocourred while retrieving the client data.${error}`);
   }
@@ -36,9 +38,9 @@ export async function getFourClients(startModal) {
     return response;
   } catch (error) {
     if (error.response?.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response?.status !== 401) {
-      startModal('Não foi possível listar os últimos quatro clientes, tente novamente mais tarde.');
+      startModal(NO_LIST_4CLIENTS);
     }
     console.error(`An unexpected error ocourred while retrieving newest four clients list.${error}`);
   }
@@ -47,8 +49,11 @@ export async function getFourClients(startModal) {
 
 export async function postClient(
   inputName, inputEmail, inputCpf, inputPhone, inputSecondaryPhone,
-  inputAddress, officeOption, locationOption, selectedFeatures,
-  startModal, userContext, baseImage,
+  inputAddress,
+  inputGender, inputBirthdate, inputHealthRestrictions,
+  inputAdministrativeRestrictions,
+  officeOption, locationOption,
+  selectedFeatures, startModal, userContext, baseImage,
 ) {
   try {
     const response = await APIClients.post('clients/create', {
@@ -58,6 +63,10 @@ export async function postClient(
       phone: inputPhone,
       secondaryPhone: inputSecondaryPhone,
       address: inputAddress,
+      gender: inputGender,
+      birthdate: inputBirthdate,
+      healthRestrictions: inputHealthRestrictions,
+      administrativeRestrictions: inputAdministrativeRestrictions,
       office: officeOption,
       location: locationOption,
       features: selectedFeatures,
@@ -67,13 +76,13 @@ export async function postClient(
     return response;
   } catch (error) {
     if (error.response.status === 400 && error.response.data.message.email) {
-      startModal('Email já cadastrado');
+      startModal(EMAIL_REGISTER);
     } else if (error.response.status === 400 && error.response.data.message.cpf) {
-      startModal('CPF já cadastrado');
+      startModal(CPF_REGISTER);
     } else if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possivel criar o cliente. Tente novamente mais tarde');
+      startModal(NO_CREATE_CLIENT);
     }
     console.error(`An unexpected error ocourred while creating a new client.${error}`);
   }
@@ -82,8 +91,9 @@ export async function postClient(
 
 export async function updateClient(
   inputName, inputEmail, inputCpf, inputPhone, inputSecondaryPhone,
-  inputAddress, officeOption, locationOption, features, id, startModal, userContext,
-  baseImage,
+  inputAddress, inputGender, inputBirthdate, inputHealthRestrictions,
+  inputAdministrativeRestrictions, officeOption, locationOption,
+  features, id, startModal, userContext, baseImage,
 ) {
   try {
     const response = await APIClients.put(`/clients/update/${id}`, {
@@ -93,6 +103,10 @@ export async function updateClient(
       phone: inputPhone,
       secondaryPhone: inputSecondaryPhone,
       address: inputAddress,
+      gender: inputGender,
+      birthdate: inputBirthdate,
+      healthRestrictions: inputHealthRestrictions,
+      administrativeRestrictions: inputAdministrativeRestrictions,
       office: officeOption,
       location: locationOption,
       userID: userContext,
@@ -102,9 +116,9 @@ export async function updateClient(
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possivel atualizar o cliente. Tente novamente mais tarde');
+      startModal(NO_UPDATE_CLIENT);
     }
     console.error(`An unexpected error ocourred while updating the client data.${error}`);
   }
@@ -116,7 +130,7 @@ export const toggleStatus = async (id, startModal) => {
     await APIClients.put(`/clients/toggleStatus/${id}`);
   } catch (error) {
     console.error(error);
-    startModal('Não foi possivel desativar/reativar o cliente, tente novamente mais tarde.');
+    startModal(CLIENT_OPEN_DEMAND);
   }
 };
 
@@ -126,9 +140,9 @@ export const getFeatures = async (url, startModal) => {
     return res;
   } catch (error) {
     if (error.response?.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response?.status !== 401) {
-      startModal('Não foi possível obter a lista de caracteristicas, tente novamente mais tarde.');
+      startModal(NO_LIST_CARACT);
     }
     console.error(`An unexpected error ocourred while retrieving the features list.${error}`);
   }
@@ -143,9 +157,9 @@ export const getClientFeatures = async (featuresList, startModal) => {
     return res;
   } catch (error) {
     if (error.response?.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response?.status !== 401) {
-      startModal('Não foi possível obter a lista de categorias do cliente, tente novamente mais tarde.');
+      startModal(NO_LIST_CATEGORY);
     }
     console.error(`An unexpected error ocourred while retrieving the client features list.${error}`);
   }
@@ -162,13 +176,13 @@ export const createFeature = async (
       color,
     });
     if (res.data.status) {
-      startModal('Preencha todos os campos para poder criar uma nova caracteristica');
+      startModal(CREATE_NEW_CARACT);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível criar a nova caracteristica, tente novamente mais tarde.');
+      startModal(NO_CREATE_CARACT);
     }
     console.error(`An unexpected error ocourred while creating a new feature.${error}`);
   }
@@ -185,13 +199,13 @@ export const updateFeature = async (
       color,
     });
     if (res.data.status) {
-      startModal('Preencha todos os campos para poder editar uma categoria');
+      startModal(FILL_ALL_FIELDS_EDIT);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível atualizar a demanda, tente novamente mais tarde.');
+      startModal(NO_UPDATE_DEMAND);
     }
     console.error(`An unexpected error ocourred while updating an already created demand.${error}`);
   }
@@ -203,7 +217,7 @@ export const deleteFeature = async (id, startModal) => {
     return res;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
       startModal(`Não foi possivel deletar a categoria.\n${error}`);
     }
@@ -219,13 +233,13 @@ export async function createWorkspace(name, description, startModal) {
       description,
     });
     if (response.data.status) {
-      startModal('Preencha todos os campos para poder criar uma nova lotação');
+      startModal(FILL_ALL_FIELDS_CREATE);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível criar a nova lotação, tente novamente mais tarde.');
+      startModal(NO_CREATE_LOTATION);
     }
     console.error(`An unexpected error ocourred while creating a new workspace.${error}`);
   }
@@ -240,13 +254,13 @@ export const updateWorkspace = async (
       description,
     });
     if (res.data.status) {
-      startModal('Preencha todos os campos para poder editar uma lotação');
+      startModal(FILL_ALL_FIELDS_EDIT_LOTATION);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível atualizar a lotação, tente novamente mais tarde.');
+      startModal(NO_UPDATE_LOTATION);
     }
     console.error(`An unexpected error ocourred while updating an already created workspace.${error}`);
   }
@@ -258,9 +272,9 @@ export const deleteWorkspace = async (id, startModal) => {
     return res;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal(`Não foi possivel deletar a lotação.\n${error}`);
+      startModal(NO_DELETE_LOTATION);
     }
     console.error(error);
   }
@@ -273,9 +287,9 @@ export async function getCargos(url, startModal) {
     return response;
   } catch (error) {
     if (error.response?.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response?.status !== 401) {
-      startModal('Não foi possível obter a lista de clientes, tente novamente mais tarde.');
+      startModal(NO_CLIENT_LIST);
     }
     console.error(`An unexpected error ocourred while retrieving the clients list.${error}`);
   }
@@ -289,13 +303,13 @@ export async function createCargo(name, description, startModal) {
       description,
     });
     if (response.data.status) {
-      startModal('Preencha todos os campos para poder criar um novo cargo');
+      startModal(FILL_ALL_FIELDS_CREATE_CARGO);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível criar a nova lotação, tente novamente mais tarde.');
+      startModal(NO_CREATE_LOTATION);
     }
     console.error(`An unexpected error ocourred while creating a new workspace.${error}`);
   }
@@ -310,13 +324,13 @@ export const updateCargo = async (
       description,
     });
     if (res.data.status) {
-      startModal('Preencha todos os campos para poder editar um cargo');
+      startModal(FILL_FIELDS_EDIT_CARGO);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível atualizar a lotação, tente novamente mais tarde.');
+      startModal(NO_UPDATE_LOTATION);
     }
     console.error(`An unexpected error ocourred while updating an already created workspace.${error}`);
   }
@@ -328,9 +342,9 @@ export const deleteCargo = async (id, startModal) => {
     return res;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal(`Não foi possivel deletar a lotação.\n${error}`);
+      startModal(NO_DELETE_LOTATION);
     }
     console.error(error);
   }
