@@ -1,4 +1,5 @@
 import { APIDemands } from './baseService';
+import "../../Constants/Errors";
 
 export async function getCategories(url, startModal) {
   try {
@@ -6,9 +7,9 @@ export async function getCategories(url, startModal) {
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível carregar as categorias já criadas, tente novamente mais tarde.');
+      startModal(NO_CATEGORY_CREATED);
     }
     console.error(`An unexpected error ocourred while getting categories.${error}`);
   }
@@ -23,13 +24,13 @@ export async function createCategory(name, description, color, startModal) {
       color,
     });
     if (response.data.status) {
-      startModal('Preencha todos os campos para poder criar uma nova categoria');
+      startModal(FILL_ALL_FIELDS_CREATE_CATEGORY);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível criar a nova categoria, tente novamente mais tarde.');
+      startModal(NO_CREATE_CATEGORY);
     }
     console.error(`An unexpected error ocourred while creating a new category.${error}`);
   }
@@ -43,11 +44,11 @@ export async function updateCategory(name, description, color, id, startModal) {
       color,
     });
     if (response.data.status) {
-      startModal('Preencha todos os campos para poder editar uma categoria');
+      startModal(FILL_ALL_FIELDS_EDIT);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
       startModal('Não foi possível atualizar a categoria, tente novamente mais tarde.');
     }
@@ -60,7 +61,7 @@ export const deleteCategory = async (id, startModal) => {
     await APIDemands.delete(`/category/delete/${id}`);
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
       startModal(`Não foi possivel deletar a categoria.\n${error}`);
     }
@@ -74,7 +75,7 @@ export async function getDemands(url, startModal) {
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
       startModal('Não foi possível carregar as demandas já criadas, tente novamente mais tarde.');
     }
@@ -89,7 +90,7 @@ export async function getFourDemands(startModal) {
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
       startModal('Não foi possível listar as últimas quatro demandas, tente novamente mais tarde.');
     }
@@ -113,12 +114,12 @@ export async function createDemand(
       demandDate,
     });
     if (response.data.status) {
-      startModal('Preencha todos os campos para poder criar uma nova categoria');
+      startModal(FILL_ALL_FIELDS_CREATE_CATEGORY);
     }
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
       startModal('Não foi possível criar a nova demanda, tente novamente mais tarde.');
     }
@@ -142,13 +143,13 @@ export async function updateDemand(
 
     });
     if (response.data.status) {
-      startModal('Preencha todos os campos para poder editar uma categoria');
+      startModal(FILL_ALL_FIELDS_EDIT);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível atualizar a demanda, tente novamente mais tarde.');
+      startModal(NO_UPDATE_DEMAND);
     }
     console.error(`An unexpected error ocourred while updating an already created demand.${error}`);
   }
@@ -159,9 +160,9 @@ export async function toggleDemand(id, startModal) {
     await APIDemands.put(`demand/toggle/${id}`);
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível encerrar a demanda, tente novamente mais tarde.');
+      startModal(NO_FINALIZE_DEMAND);
     }
     console.error(`An unexpected error ocourred while closing an already created demand.${error}`);
   }
@@ -173,13 +174,13 @@ export async function updateDemandSector(sectorID, id, startModal) {
       sectorID,
     });
     if (response.data.status) {
-      startModal('Selecione um dos setores disponíveis');
+      startModal(SELECT_SECTOR);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível atualizar o setor da demanda, tente novamente mais tarde.');
+      startModal(NO_UPDATE_SECTOR);
     }
     console.error(`An unexpected error occurred while updating a demand's sector.${error}`);
   }
@@ -191,13 +192,13 @@ export async function forwardDemand(sectorID, id, startModal) {
       sectorID,
     });
     if (response.data.status) {
-      startModal('Não foi possível encaminhar a demanda');
+      startModal(SEND_DEMAND);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível encaminhar a demanda para o setor desejado, tente novamente mais tarde.');
+      startModal(SEND_DEMAND_SECTOR);
     }
     console.error(`An unexpected error occurred while forwarding a demand to another sector.${error}`);
   }
@@ -223,13 +224,13 @@ export async function createDemandUpdate(
       important,
     });
     if (response.data.status) {
-      startModal('Preencha o campo de descrição da atualização para ser possível o envio.');
+      startModal(FILL_FIELD_DESCRIPTION);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível enviar a atualização da demanda, tente novamente mais tarde.');
+      startModal(NO_SEND_ATUALIZATION);
     }
     console.error(`An unexpected error occurred while sending a demand update.${error}`);
   }
@@ -241,9 +242,9 @@ export async function getDemandsWithClientsNames(url, startModal) {
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível carregar as categorias já criadas com os nomes dos clientes, tente novamente mais tarde.');
+      startModal(NO_ATUALIZE_CATEGORY);
     }
     console.error(`An unexpected error ocourred while getting demands with clients names.${error}`);
   }
@@ -256,9 +257,9 @@ export async function getDemandsStatistics(url, startModal) {
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível carregar as estatísticas');
+      startModal(NO_ATUALIZE_ESTATISTIC);
       console.error(`An unexpected error ocourred while getting demands with clients names.${error}`);
     }
   }
@@ -271,13 +272,13 @@ export async function deleteDemandUpdate(id, updateListID, startModal) {
       updateListID,
     });
     if (response.data.status) {
-      startModal('Não foi possível deletar a atualização.');
+      startModal(NO_DELETE_ATUALIZATION);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível deletar a atualização da demanda, tente novamente mais tarde.');
+      startModal(NO_DELETE_ATUALIZATION_DEMAND);
     }
     console.error(`An unexpected error occurred while deleting a demand update.${error}`);
   }
@@ -301,15 +302,15 @@ export async function DemandUploadFile(
 
     const response = await APIDemands.post(`/demand/upload-file/${id}`, dataArray);
     if (response.status === 200) {
-      startModal('PDF anexado com sucesso!');
+      startModal(PDF_SUCSESS);
     }
   } catch (error) {
     if (error.response && error.response.status === 500) {
       // eslint-disable-next-line no-undef
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else {
       // eslint-disable-next-line no-undef
-      startModal('Erro ao anexar PDF.');
+      startModal(PDF_ERROR);
     }
   }
 }
@@ -336,13 +337,13 @@ export async function updateDemandUpdate(
       important,
     });
     if (response.data.status) {
-      startModal('Não foi possível editar a atualização.');
+      startModal(NO_EDIT_ATUALIZATION);
     }
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível editar a atualização da demanda, tente novamente mais tarde.');
+      startModal(NO_EDIT_ATUALIZATION_DEMAND);
     }
     console.error(`An unexpected error occurred while updating a demand update.${error}`);
   }
@@ -354,9 +355,9 @@ export async function getDemandData(id, startModal) {
     return response?.data;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente.');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível pegar dados sobre uma demanda, tente novamente mais tarde.');
+      startModal(NO_DATAS_DEMAND);
     }
     console.error(`An unexpected error ocourred while gettint a demand.${error}`);
     return null;
@@ -376,15 +377,15 @@ export async function createAlert(
       demandID,
       sectorID,
     });
-    startModal('Alerta criado com sucesso!');
+    startModal(ALERT_SUCCESS);
     return response?.data;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente.');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.data.status) {
-      startModal('Preencha todos os campos para poder criar um novo alerta.');
+      startModal(FILL_FIELDS_ALERT);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível criar um novo alerta, tente novamente mais tarde.');
+      startModal(NO_CREATED_ALERT);
     }
     console.error(`An unexpected error ocourred while creating a new alert.${error}`);
     return null;
@@ -406,14 +407,14 @@ export async function updateAlert(
       sectorID,
     });
     if (response.data.status) {
-      startModal('Preencha todos os campos para poder editar um alerta');
+      startModal(FILL_ALL_FIELDS_EDIT_ALERT);
     }
     return response?.data;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível atualizar o alerta, tente novamente mais tarde.');
+      startModal(NO_UPDATE_ALERT);
     }
     console.error(`An unexpected error ocourred while updating an already created alert.${error}`);
   }
@@ -425,7 +426,7 @@ export const deleteAlert = async (id, startModal) => {
     await APIDemands.delete(`/alert/delete/${id}`);
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
       startModal(`Não foi possivel deletar o alerta.\n${error}`);
     }
@@ -439,9 +440,9 @@ export async function getAlerts(url, startModal) {
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível carregar os alertas já criados, tente novamente mais tarde.');
+      startModal(NO_ATUALIZE_ALERT);
     }
     console.error(`An unexpected error ocourred while getting alerts.${error}`);
   }
@@ -454,9 +455,9 @@ export async function getAlertsByDemand(id, startModal) {
     return response.data;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível carregar os alertas dessa demanda, tente novamente mais tarde.');
+      startModal(NO_ATUALIZE_ALERT_DEMAND);
     }
     console.error(`An unexpected error ocourred while getting alerts by demand.${error}`);
   }
@@ -472,9 +473,9 @@ export async function getAlertsBySector(id, startModal) {
     return response.data;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível carregar os alertas desse setor, tente novamente mais tarde.');
+      startModal(NO_ATUALIZE_ALERT_SECTOR);
     }
     console.error(`An unexpected error ocourred while getting alerts by sector.${error}`);
   }

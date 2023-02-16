@@ -1,4 +1,5 @@
 import { APISectors } from './baseService/index';
+import "../../Constants/Errors";
 
 export async function getSectors(startModal) {
   try {
@@ -6,9 +7,9 @@ export async function getSectors(startModal) {
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível obter a lista de setores, tente novamente mais tarde.');
+      startModal(NO_LIST_SECTOR);
     }
     console.error(`An unexpected error ocourred while retrieving the sectors list.${error}`);
   }
@@ -21,9 +22,9 @@ export async function getFourSectors(startModal) {
     return response;
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possível listar os ultimos quatro setores, tente novamente mais tarde.');
+      startModal(NO_LIST_4SECTORS);
     }
     console.error(`An unexpected error ocourred while retrieving the newest four sectors list.${error}`);
   }
@@ -35,7 +36,7 @@ export async function getSector(url, startModal) {
     const response = await APISectors.get(url);
     return response;
   } catch (error) {
-    startModal('Não foi possível obter o setor, tente novamente mais tarde.');
+    startModal(NO_SECTOR);
     console.error(`An unexpected error ocourred while retrieving the sectors list.${error}`);
   }
   return false;
@@ -52,11 +53,11 @@ export async function postSectors(
     return response;
   } catch (error) {
     if (error.response.data.error === 11000) {
-      startModal('Setor duplicado');
+      startModal(SECTOR_DUPLICATE);
     } else if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal('Não foi possivel criar o setor. Tente novamente mais tarde');
+      startModal(NO_CREATE_SECTOR);
     }
     console.error(`An unexpected error ocourred while creating a new sector.${error}`);
   }
@@ -72,12 +73,12 @@ export const updateSectors = async (
       description: inputDescription,
     })
       .catch((error) => {
-        startModal('Não foi possivel atualizar o setor. Tente novamente mais tarde');
+        startModal(NO_ATUALIZE_SECTOR);
         console.error(`An unexpected error ocourred while updating the sector data.${error}`);
       });
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     }
   }
 };
@@ -87,9 +88,9 @@ export const deleteSector = async (id, startModal) => {
     await APISectors.delete(`/sector/delete/${id}`);
   } catch (error) {
     if (error.response.status === 500) {
-      startModal('O tempo da sua sessão expirou, faça o login novamente');
+      startModal(SESSION_EXPIRED);
     } else if (error.response.status !== 401) {
-      startModal(`Não foi possivel deletar o setor.\n${error}`);
+      startModal(NO_DELETE_SECTOR);
     }
     console.error(error);
   }
